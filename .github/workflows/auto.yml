@@ -1,30 +1,25 @@
-name: MakeDB
+name: Telegram Bot Runner
 on:
   push:
-    branches:
-      - main  # Agar aapki branch ka naam 'master' hai toh yahan master likhein
-  workflow_dispatch:
+    branches: [ main ]
+  schedule:
+    - cron: '0 */6 * * *' # Har 6 ghante baad restart hoga taake band na ho
+  workflow_dispatch: # Button se chalane ke liye
 
 jobs:
-  build:
+  run-bot:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v3
+      
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
-      - name: Install pandas
-        run: pip install pandas
-      - name: Run converter
-        run: python convert.py
-      - name: Commit and Push DB
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add database.db
-          git commit -m "Generated DB" || echo "No changes"
-          git push
-          
+
+      - name: Install Dependencies
+        run: pip install python-telegram-bot pandas
+
+      - name: Start Bot
+        run: python bot.py
+        timeout-minutes: 350 # Ek session takreeban 6 ghante chalega
