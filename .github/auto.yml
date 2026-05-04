@@ -1,0 +1,17 @@
+name: MakeDB
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - install: pip install pandas
+      - run: python convert.py
+      - name: Save DB
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add database.db
+          git commit -m "Auto DB Create"
+          git push
+          
