@@ -1,0 +1,30 @@
+name: MakeDB
+on:
+  push:
+    branches:
+      - main  # Agar aapki branch ka naam 'master' hai toh yahan master likhein
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Install pandas
+        run: pip install pandas
+      - name: Run converter
+        run: python convert.py
+      - name: Commit and Push DB
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add database.db
+          git commit -m "Generated DB" || echo "No changes"
+          git push
+          
